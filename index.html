@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Consulta de Alumnos</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+      background: #f4f4f9;
+    }
+    h1 {
+      color: #333;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+    }
+    button {
+      background: black;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #444;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 15px;
+      background: #fafafa;
+    }
+    .card h3 {
+      margin-top: 0;
+      color: #444;
+    }
+  </style>
+</head>
+<body>
+  <h1>Consulta de Alumnos Escuela Secundaria Mixta 58</h1>
+  <input type="text" id="codigo" placeholder="Ingrese código del alumno">
+  <button onclick="buscarAlumno()">Buscar</button>
+
+  <div id="resultado"></div>
+
+  <script>
+    const url = "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado";
+
+    async function buscarAlumno() {
+      const codigo = document.getElementById("codigo").value.trim();
+      const res = await fetch(url);
+      const data = await res.json();
+      
+      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
+
+      if (!alumno) {
+        document.getElementById("resultado").innerHTML = "<p>No se encontró el alumno.</p>";
+        return;
+      }
+
+      const calC1 = parseFloat(alumno["TOTAL DE CALIFICACION C1"]) || 0;
+      const calC2 = parseFloat(alumno["TOTAL DE CALIFICACION C2"]) || 0;
+      const exm = parseFloat(alumno["EXAMEN"]) || 0;
+      const promedio = (exm + (calC1 + calC2) / 2).toFixed(2);
+
+      document.getElementById("resultado").innerHTML = `
+        <div class="result">
+          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
+
+          <div class="grid">
+            <div class="card">
+              <h3>1er Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 80"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Práctica Mujeres en la tecnologia"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto ADIVINA QUE"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 1 a 10"] || "-"}</p>
+              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+            </div>
+
+            <div class="card">
+              <h3>2do Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Practica Bloggif"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["PROYECTO"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 11 a 25"] || "-"}</p>
+              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 15px;">
+            <h3>Examen</h3>
+            <p><b>Aciertos Examen:</b> ${alumno["ACIERTOSE"] || "-"}</p>
+            <p><b>Valor del Examen:</b> ${alumno["EXAMEN"] || "-"}</p>
+            <p><b> 1er Trimestre:</b> ${promedio}</p>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
