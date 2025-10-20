@@ -81,11 +81,6 @@
         return;
       }
 
-      const calC1 = parseFloat(alumno["TOTAL DE CALIFICACION C1"]) || 0;
-      const calC2 = parseFloat(alumno["TOTAL DE CALIFICACION C2"]) || 0;
-      const exm = parseFloat(alumno["EXAMEN"]) || 0;
-      const promedio = (exm + (calC1 + calC2) / 2).toFixed(2);
-
       // Manejo flexible del campo Observaciones
       const observaciones = alumno["Observaciones"] || alumno["OBSERVACIONES"] || alumno["Observacion"] || alumno["OBSERVACION"] || "-";
 
@@ -122,7 +117,7 @@
             <h3>Examen</h3>
             <p><b>Aciertos Examen:</b> ${alumno["ACIERTOSE"] || "-"}</p>
             <p><b>Valor del Examen:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Promedio 1er Trimestre:</b> ${promedio}</p>
+            <p><b>Promedio 1er Trimestre:</b> ${alumno["TOTAL TRIMESTRE"]}</p>
           </div>
         </div>
       `;
@@ -133,4 +128,5 @@
 
 
 </html>
+
 
