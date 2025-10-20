@@ -11,16 +11,19 @@
     }
     h1 {
       color: #333;
+      text-align: center;
     }
     input, button {
       padding: 8px;
       margin: 5px;
+      font-size: 14px;
     }
     button {
       background: black;
       color: white;
       border: none;
       cursor: pointer;
+      border-radius: 4px;
     }
     button:hover {
       background: #444;
@@ -47,6 +50,13 @@
       margin-top: 0;
       color: #444;
     }
+    .observaciones {
+      border-left: 5px solid #f1c40f;
+      background: #fff8dc;
+      padding: 10px;
+      margin: 15px 0;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
@@ -64,7 +74,7 @@
       const res = await fetch(url);
       const data = await res.json();
       
-      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
+      const alumno = data.find(a => a.CODIGO && a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
 
       if (!alumno) {
         document.getElementById("resultado").innerHTML = "<p>No se encontró el alumno.</p>";
@@ -76,15 +86,17 @@
       const exm = parseFloat(alumno["EXAMEN"]) || 0;
       const promedio = (exm + (calC1 + calC2) / 2).toFixed(2);
 
+      // Manejo flexible del campo Observaciones
+      const observaciones = alumno["Observaciones"] || alumno["OBSERVACIONES"] || alumno["Observacion"] || alumno["OBSERVACION"] || "-";
+
       document.getElementById("resultado").innerHTML = `
         <div class="result">
           <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-            
-          <div class="card">
-          <h3> Observaciones del alumno: </h3>
-          <p> ${alumno["Observaciones"] || "-"}</p>
+          
+          <div class="observaciones">
+            <h3>📝 Observaciones del alumno:</h3>
+            <p>${observaciones}</p>
           </div>
-
 
           <div class="grid">
             <div class="card">
@@ -110,12 +122,15 @@
             <h3>Examen</h3>
             <p><b>Aciertos Examen:</b> ${alumno["ACIERTOSE"] || "-"}</p>
             <p><b>Valor del Examen:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b> 1er Trimestre:</b> ${promedio}</p>
+            <p><b>Promedio 1er Trimestre:</b> ${promedio}</p>
           </div>
         </div>
       `;
     }
   </script>
 </body>
+</html>
+
 
 </html>
+
