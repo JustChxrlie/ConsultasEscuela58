@@ -182,11 +182,7 @@
 
     function generarHTML_2do(alumno) {
 
-      const obs2 = alumno["Observaciones"] 
-                || alumno["OBSERVACIONES"] 
-                || alumno["Observacion"] 
-                || alumno["OBSERVACION"]
-                || "-";
+      const obs2 = alumno["Observaciones"] || "-";
 
       return `
         <div class="result">
@@ -241,4 +237,5 @@
 
 </body>
 </html>
+
 
