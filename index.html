@@ -1,241 +1,163 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Consulta de Alumnos</title>
-
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      padding: 20px;
-      background: #f4f4f9;
-    }
-    h1, h2 {
-      text-align: center;
-      color: #333;
-    }
-    input, button {
-      padding: 8px;
-      margin: 5px;
-      font-size: 14px;
-    }
-    button {
-      background: black;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-    button:hover {
-      background: #444;
-    }
-    .result {
-      margin-top: 20px;
-      padding: 15px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-    }
-    .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 15px;
-      background: #fafafa;
-    }
-    .observaciones {
-      border-left: 5px solid #f1c40f;
-      background: #fff8dc;
-      padding: 10px;
-      margin: 15px 0;
-      border-radius: 6px;
-    }
-    .box {
-      background: white;
-      padding: 20px;
-      margin: 20px auto;
-      border-radius: 10px;
-      max-width: 600px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
+    body{font-family:Arial,Helvetica,sans-serif;padding:18px;background:#f4f4f9}
+    h1,h2{text-align:center;color:#333}
+    .box{background:#fff;padding:16px;border-radius:8px;max-width:760px;margin:16px auto;box-shadow:0 2px 8px rgba(0,0,0,0.08)}
+    input,button{padding:8px;margin:6px;font-size:14px}
+    button{background:#111;color:#fff;border:none;border-radius:6px;cursor:pointer}
+    button:hover{opacity:.9}
+    .result{margin-top:14px;padding:12px;background:#fff;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .card{border:1px solid #ddd;border-radius:8px;padding:12px;background:#fafafa}
+    .observaciones{border-left:5px solid #f1c40f;background:#fff8dc;padding:10px;margin:12px 0;border-radius:6px}
+    .small{font-size:13px;color:#555}
   </style>
 </head>
-
 <body>
+  <h1>Consulta de Alumnos Maestra Erika Secundaria Mixta 58</h1>
 
-  <h1>Consulta de Alumnos Maestra Erika Escuela Secundaria Mixta 58</h1>
-
-  <!-- ===== BUSCADOR 1ER TRIMESTRE ===== -->
   <div class="box">
     <h2>1er Trimestre</h2>
-    <input type="text" id="codigo1" placeholder="Ingrese código del alumno">
-    <button onclick="buscarAlumno1()">Buscar</button>
-    <div id="resultado1"></div>
+    <input id="codigo1" placeholder="Código alumno">
+    <button onclick="buscarAlumno1()">Buscar 1er</button>
+    <div id="resultado1" class="result"></div>
   </div>
 
-  <!-- ===== BUSCADOR 2DO TRIMESTRE ===== -->
   <div class="box">
     <h2>2do Trimestre</h2>
-    <input type="text" id="codigo2" placeholder="Ingrese código del alumno">
-    <button onclick="buscarAlumno2()">Buscar</button>
-    <div id="resultado2"></div>
+    <input id="codigo2" placeholder="Código alumno">
+    <button onclick="buscarAlumno2()">Buscar 2do</button>
+    <div id="resultado2" class="result"></div>
   </div>
 
-  <script>
+<script>
+/* ---------- CONFIG ---------- */
+const url1 = "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado";
+const url2_base = "https://opensheet.elk.sh/1LtTVoojUEbXmcDoGkWoXdYP6XFFdjmWagudlwVKA10k/";
+const defaultSheetNames = ["concentrado","Concentrado","CONCENTRADO","Hoja1","Sheet1","Datos","data","Hoja 1","concentrado "];
 
-    /* URL del 1er Trimestre */
-    const url1 = "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado";
+/* ---------- UTILIDADES ---------- */
+function findKeyIgnoreCase(obj, keyword){
+  const keys = Object.keys(obj || {});
+  keyword = keyword.toLowerCase();
+  return keys.find(k => k.toLowerCase().includes(keyword)) || null;
+}
 
-    /* URL del 2do Trimestre */
-    const url2 = "https://opensheet.elk.sh/1LtTVoojUEbXmcDoGkWoXdYP6XFFdjmWagudlwVKA10k/concentrado"; 
-  
+async function fetchJson(url){
+  const res = await fetch(url);
+  return JSON.parse(await res.text());
+}
 
-    
-    /* ----------- 1ER TRIMESTRE ----------- */
-    async function buscarAlumno1() {
-      const codigo = document.getElementById("codigo1").value.trim();
-      const res = await fetch(url1);
-      const data = await res.json();
+/* ---------- GENERADORES HTML ---------- */
+function renderStudent(alumno){
+  const keyName = findKeyIgnoreCase(alumno, "nombre") || Object.keys(alumno)[1];
+  const keyCodigo = findKeyIgnoreCase(alumno, "codig") || Object.keys(alumno)[0];
+  const obs = alumno["Observaciones"] || alumno["OBSERVACIONES"] || "-";
+  const get = k => alumno[k] || "-";
 
-      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
+  return `
+    <div class="result">
+      <h2>${alumno[keyName]} (${alumno[keyCodigo]})</h2>
 
-      if (!alumno) {
-        document.getElementById("resultado1").innerHTML = "<p>No se encontró el alumno.</p>";
-        return;
-      }
+      <div class="observaciones">
+        <h3>📝 Observaciones:</h3>
+        <p>${obs}</p>
+      </div>
 
-      document.getElementById("resultado1").innerHTML = generarHTML_1er(alumno);
-    }
-
-    /* ----------- 2DO TRIMESTRE ----------- */
-    async function buscarAlumno2() {
-      const codigo = document.getElementById("codigo2").value.trim();
-      const res = await fetch(url2);
-      const data = await res.json();
-
-      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
-
-      if (!alumno) {
-        document.getElementById("resultado2").innerHTML = "<p>No se encontró el alumno.</p>";
-        return;
-      }
-
-      document.getElementById("resultado2").innerHTML = generarHTML_2do(alumno);
-    }
-
-    /*              HTML 1ER TRIMESTRE                 */
-    
-    function generarHTML_1er(alumno) {
-
-      /* Detectar la columna Observaciones */
-      const obs = alumno["Observaciones"] 
-               || alumno["OBSERVACIONES"] 
-               || alumno["Observacion"] 
-               || alumno["OBSERVACION"]
-               || "-";
-
-      return `
-        <div class="result">
-          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-
-          <div class="observaciones">
-            <h3>📝 Observaciones del Alumno (1er Trimestre):</h3>
-            <p>${obs}</p>
-          </div>
-
-          <div class="grid">
-            <div class="card">
-              <h3>1er Contenido</h3>
-              <p><b>Trabajos:</b> ${alumno["TAREAS de 80"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Práctica Mujeres en la tecnologia"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto ADIVINA QUE"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 1 a 10"] || "-"}</p>
-              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
-            </div>
-
-            <div class="card">
-              <h3>2do Contenido</h3>
-              <p><b>Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Practica Bloggif"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["PROYECTO"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 11 a 25"] || "-"}</p>
-              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
-            </div>
-          </div>
-
-          <div class="card" style="margin-top: 15px;">
-            <h3>Examen</h3>
-            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
-            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
-          </div>
+      <div class="grid">
+        <div class="card">
+          <h3>1er Contenido</h3>
+          <p><b>Trabajos:</b> ${get("TAREAS de 80")}</p>
+          <p><b>Prácticas:</b> ${get("Práctica Mujeres en la tecnologia")}</p>
+          <p><b>Proyecto:</b> ${get("Proyecto ADIVINA QUE")}</p>
+          <p><b>Fichas:</b> ${get("FICHAS 1 a 10")}</p>
+          <p><b>Calificación:</b> ${get("TOTAL DE CALIFICACION C1")}</p>
         </div>
-      `;
-    }
 
-    /*              HTML 2DO TRIMESTRE                 */
-
-    function generarHTML_2do(alumno) {
-
-      const obs2 = alumno["Observaciones"] || "-";
-
-      return `
-        <div class="result">
-          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-
-          <div class="observaciones">
-            <h3>📝 Observaciones del Alumno (2do Trimestre):</h3>
-            <p>${obs2}</p>
-          </div>
-
-          <div class="grid">
-            <div class="card">
-              <h3>1er Contenido</h3>
-              <p><b>Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Pract 4. Energia"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto Mapa"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 1 a la 5"] || "-"}</p>
-              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
-            </div>
-
-            <div class="card">
-              <h3>2do Contenido</h3>
-              <p><b>Trabajos:</b> ${alumno["TAREAS de 70 C2"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto  Avance Empresa"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 6 a la 15"] || "-"}</p>
-              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
-            </div>
-
-            <div class="card">
-              <h3>3er Contenido</h3>
-              <p><b>Trabajos:</b> ${alumno["TAREAS de 60"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Práct 6. Pres CANVA empr"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto EMPRE"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 16 a la 25"] || "-"}</p>
-              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C3"] || "-"}</p>              
-            </div>
-          </div>
-
-          <div class="card" style="margin-top: 15px;">
-            <h3>Examen</h3>
-            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
-            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
-          </div>
+        <div class="card">
+          <h3>2do Contenido</h3>
+          <p><b>Trabajos:</b> ${get("TAREAS de 70")}</p>
+          <p><b>Prácticas:</b> ${get("Practica Bloggif")}</p>
+          <p><b>Proyecto:</b> ${get("PROYECTO")}</p>
+          <p><b>Fichas:</b> ${get("FICHAS 11 a 25")}</p>
+          <p><b>Calificación:</b> ${get("TOTAL DE CALIFICACION C2")}</p>
         </div>
-      `;
+      </div>
+
+      <div class="card" style="margin-top:12px">
+        <h3>Examen</h3>
+        <p><b>Aciertos:</b> ${get("ACIERTOSE")}</p>
+        <p><b>Valor:</b> ${get("EXAMEN")}</p>
+        <p><b>Total Trimestre:</b> ${get("TOTAL TRIMESTRE")}</p>
+      </div>
+    </div>
+  `;
+}
+
+/* ---------- FUNCIONES DE BÚSQUEDA ---------- */
+
+async function buscarAlumno1(){
+  const codigo = document.getElementById("codigo1").value.trim().toUpperCase();
+  if (!codigo){ document.getElementById("resultado1").innerHTML = "<p>Ingresa un código.</p>"; return; }
+
+  try {
+    const data = await fetchJson(url1);
+    const sample = data[0] || {};
+    const codeKey = findKeyIgnoreCase(sample, "codig") || "CODIGO";
+
+    const alumno = data.find(a => String(a[codeKey]).trim().toUpperCase() === codigo);
+
+    if (!alumno){
+      document.getElementById("resultado1").innerHTML = "<p>No se encontró el alumno en 1er trimestre.</p>";
+      return;
     }
 
+    document.getElementById("resultado1").innerHTML = renderStudent(alumno);
+
+  } catch (err){
+    document.getElementById("resultado1").innerHTML = "<p>Error al consultar 1er trimestre.</p>";
+  }
+}
+
+async function buscarAlumno2(){
+  const codigo = document.getElementById("codigo2").value.trim().toUpperCase();
+  if (!codigo){ document.getElementById("resultado2").innerHTML = "<p>Ingresa un código.</p>"; return; }
+
+  let data = null;
+  for (const s of defaultSheetNames){
+    try {
+      const url = `${url2_base}/${encodeURIComponent(s)}`;
+      const res = await fetchJson(url);
+      if (Array.isArray(res)){ data = res; break; }
+    } catch{}
+  }
+
+  if (!data){
+    document.getElementById("resultado2").innerHTML = "<p>No se pudo leer la hoja del 2° trimestre.</p>";
+    return;
+  }
+
+  const sample = data[0] || {};
+  const codeKey = findKeyIgnoreCase(sample, "codig") || "CODIGO";
+
+  const alumno = data.find(a => String(a[codeKey]).trim().toUpperCase() === codigo);
+
+  if (!alumno){
+    document.getElementById("resultado2").innerHTML = "<p>No se encontró el alumno en 2do trimestre.</p>";
+    return;
+  }
+
+  document.getElementById("resultado2").innerHTML = renderStudent(alumno);
+}
 </script>
-
-
 </body>
 </html>
+
+
 
 
