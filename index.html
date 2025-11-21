@@ -4,15 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Consulta de Alumnos</title>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       padding: 20px;
       background: #f4f4f9;
     }
-    h1 {
-      color: #333;
+    h1, h2 {
       text-align: center;
+      color: #333;
     }
     input, button {
       padding: 8px;
@@ -47,10 +48,6 @@
       padding: 15px;
       background: #fafafa;
     }
-    .card h3 {
-      margin-top: 0;
-      color: #444;
-    }
     .observaciones {
       border-left: 5px solid #f1c40f;
       background: #fff8dc;
@@ -58,40 +55,97 @@
       margin: 15px 0;
       border-radius: 6px;
     }
+    .box {
+      background: white;
+      padding: 20px;
+      margin: 20px auto;
+      border-radius: 10px;
+      max-width: 600px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
-<body>
-  <h1>Consulta de Alumnos Escuela Secundaria Mixta 58</h1>
-  <input type="text" id="codigo" placeholder="Ingrese código del alumno">
-  <button onclick="buscarAlumno()">Buscar</button>
 
-  <div id="resultado"></div>
+<body>
+
+  <h1>Consulta de Alumnos Maestra Erika Escuela Secundaria Mixta 59</h1>
+
+  <!-- ===== BUSCADOR 1ER TRIMESTRE ===== -->
+  <div class="box">
+    <h2>1er Trimestre</h2>
+    <input type="text" id="codigo1" placeholder="Ingrese código del alumno">
+    <button onclick="buscarAlumno1()">Buscar</button>
+    <div id="resultado1"></div>
+  </div>
+
+  <!-- ===== BUSCADOR 2DO TRIMESTRE ===== -->
+  <div class="box">
+    <h2>2do Trimestre</h2>
+    <input type="text" id="codigo2" placeholder="Ingrese código del alumno">
+    <button onclick="buscarAlumno2()">Buscar</button>
+    <div id="resultado2"></div>
+  </div>
 
   <script>
-    const url = "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado";
 
-    async function buscarAlumno() {
-      const codigo = document.getElementById("codigo").value.trim();
-      const res = await fetch(url);
+    /* URL del 1er Trimestre */
+    const url1 = "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado";
+
+    /* URL del 2do Trimestre */
+    const url2 = "https://opensheet.elk.sh/1LtTVoojUEbXmcDoGkWoXdYP6XFFdjmWagudlwVKA10k/concentrado"; 
+  
+
+    
+    /* ----------- 1ER TRIMESTRE ----------- */
+    async function buscarAlumno1() {
+      const codigo = document.getElementById("codigo1").value.trim();
+      const res = await fetch(url1);
       const data = await res.json();
-      
-      const alumno = data.find(a => a.CODIGO && a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
+
+      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
 
       if (!alumno) {
-        document.getElementById("resultado").innerHTML = "<p>No se encontró el alumno.</p>";
+        document.getElementById("resultado1").innerHTML = "<p>No se encontró el alumno.</p>";
         return;
       }
 
-      // Manejo flexible del campo Observaciones
-      const observaciones = alumno["Observaciones"] || alumno["OBSERVACIONES"] || alumno["Observacion"] || alumno["OBSERVACION"] || "-";
+      document.getElementById("resultado1").innerHTML = generarHTML_1er(alumno);
+    }
 
-      document.getElementById("resultado").innerHTML = `
+    /* ----------- 2DO TRIMESTRE ----------- */
+    async function buscarAlumno2() {
+      const codigo = document.getElementById("codigo2").value.trim();
+      const res = await fetch(url2);
+      const data = await res.json();
+
+      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
+
+      if (!alumno) {
+        document.getElementById("resultado2").innerHTML = "<p>No se encontró el alumno.</p>";
+        return;
+      }
+
+      document.getElementById("resultado2").innerHTML = generarHTML_2do(alumno);
+    }
+
+    /*              HTML 1ER TRIMESTRE                 */
+    
+    function generarHTML_1er(alumno) {
+
+      /* Detectar la columna Observaciones */
+      const obs = alumno["Observaciones"] 
+               || alumno["OBSERVACIONES"] 
+               || alumno["Observacion"] 
+               || alumno["OBSERVACION"]
+               || "-";
+
+      return `
         <div class="result">
           <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-          
+
           <div class="observaciones">
-            <h3>📝 Observaciones del alumno:</h3>
-            <p>${observaciones}</p>
+            <h3>📝 Observaciones del Alumno (1er Trimestre):</h3>
+            <p>${obs}</p>
           </div>
 
           <div class="grid">
@@ -101,7 +155,7 @@
               <p><b>Prácticas:</b> ${alumno["Práctica Mujeres en la tecnologia"] || "-"}</p>
               <p><b>Proyecto:</b> ${alumno["Proyecto ADIVINA QUE"] || "-"}</p>
               <p><b>Fichas:</b> ${alumno["FICHAS 1 a 10"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
             </div>
 
             <div class="card">
@@ -110,25 +164,80 @@
               <p><b>Prácticas:</b> ${alumno["Practica Bloggif"] || "-"}</p>
               <p><b>Proyecto:</b> ${alumno["PROYECTO"] || "-"}</p>
               <p><b>Fichas:</b> ${alumno["FICHAS 11 a 25"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
             </div>
           </div>
 
           <div class="card" style="margin-top: 15px;">
             <h3>Examen</h3>
-            <p><b>Aciertos Examen:</b> ${alumno["ACIERTOSE"] || "-"}</p>
-            <p><b>Valor del Examen:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Promedio 1er Trimestre:</b> ${alumno["TOTAL TRIMESTRE"]}</p>
+            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
+            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
+            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
           </div>
         </div>
       `;
     }
-  </script>
+
+    /*              HTML 2DO TRIMESTRE                 */
+
+    function generarHTML_2do(alumno) {
+
+      const obs2 = alumno["Observaciones"] 
+                || alumno["OBSERVACIONES"] 
+                || alumno["Observacion"] 
+                || alumno["OBSERVACION"]
+                || "-";
+
+      return `
+        <div class="result">
+          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
+
+          <div class="observaciones">
+            <h3>📝 Observaciones del Alumno (2do Trimestre):</h3>
+            <p>${obs2}</p>
+          </div>
+
+          <div class="grid">
+            <div class="card">
+              <h3>1er Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Pract 4. Energia"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto Mapa"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 1 a la 5"] || "-"}</p>
+              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+            </div>
+
+            <div class="card">
+              <h3>2do Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 70 C2"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto  Avance Empresa"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 6 a la 15"] || "-"}</p>
+              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+            </div>
+
+            <div class="card">
+              <h3>3er Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 60"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Práct 6. Pres CANVA empr"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto EMPRE"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 16 a la 25"] || "-"}</p>
+              <p><b>Calificacion:</b> ${alumno["TOTAL DE CALIFICACION C3"] || "-"}</p>              
+            </div>
+          </div>
+
+          <div class="card" style="margin-top: 15px;">
+            <h3>Examen</h3>
+            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
+            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
+            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
+          </div>
+        </div>
+      `;
+    }
+
+</script>
+
+
 </body>
 </html>
-
-
-</html>
-
-
-
