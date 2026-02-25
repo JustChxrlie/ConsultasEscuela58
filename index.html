@@ -94,6 +94,9 @@
     /* URL del 2do Trimestre (corregida) */
     const url2 = "https://opensheet.elk.sh/1LtTVoojUEbXmcDoGkWoXdYP6XFFdjmWagudlwVKA10k/concentrado";
 
+    /* URL del 3er Trimestre (corregida) */
+    const url3 = "https://opensheet.elk.sh/1-noHc0-2uh6WYUTi1bVeMr46WZ7wWHa0UXFkgtJBMGo/concentrado";
+
     
     /* ----------- 1ER TRIMESTRE ----------- */
     async function buscarAlumno1() {
@@ -237,7 +240,66 @@
       `;
     }
 
+    /* ============ HTML 3ER TRIMESTRE ============ */
+
+    function generarHTML_3er(alumno) {
+
+      const obs2 = alumno["Observaciones"] || "-";
+
+      return `
+        <div class="result">
+          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
+
+          <div class="observaciones">
+            <h3>📝 Observaciones del Alumno (3er Trimestre):</h3>
+            <p>${obs2}</p>
+          </div>
+
+          <div class="grid">
+
+            <div class="card">
+              <h3>1er Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Pract 4. Energia"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto Mapa"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 1 a la 5"] || "-"}</p>
+              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+            </div>
+
+            <div class="card">
+              <h3>2do Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 70 C2"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto  Avance Empresa"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 6 a la 15"] || "-"}</p>
+              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+            </div>
+
+            <div class="card">
+              <h3>3er Contenido</h3>
+              <p><b>Trabajos:</b> ${alumno["TAREAS de 60"] || "-"}</p>
+              <p><b>Prácticas:</b> ${alumno["Práct 6. Pres CANVA empr"] || "-"}</p>
+              <p><b>Proyecto:</b> ${alumno["Proyecto EMPRE"] || "-"}</p>
+              <p><b>Fichas:</b> ${alumno["FICHAS 16 a la 25"] || "-"}</p>
+              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C3"] || "-"}</p>              
+            </div>
+
+          </div>
+
+          <div class="card" style="margin-top: 15px;">
+            <h3>Examen</h3>
+            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
+            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
+            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
+          </div>
+        </div>
+      `;
+    }
+
+
+    
   </script>
 
 </body>
 </html>
+
