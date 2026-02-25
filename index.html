@@ -155,13 +155,12 @@
       );
 
       if (!alumno) {
-        document.getElementById("resultado2").innerHTML = "<p>No se encontró el alumno.</p>";
+        document.getElementById("resultado3").innerHTML = "<p>No se encontró el alumno.</p>";
         return;
       }
 
-      document.getElementById("resultado2").innerHTML = generarHTML_3er(alumno);
+      document.getElementById("resultado3").innerHTML = generarHTML_3er(alumno);
     }
-
     
     /* ============ HTML 1ER TRIMESTRE ============ */
     function generarHTML_1er(alumno) {
@@ -330,5 +329,6 @@
 
 </body>
 </html>
+
 
 
