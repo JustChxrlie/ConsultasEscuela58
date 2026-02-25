@@ -86,6 +86,14 @@
     <div id="resultado2"></div>
   </div>
 
+  <!-- ===== BUSCADOR 3ER TRIMESTRE ===== -->
+  <div class="box">
+    <h2>3er Trimestre</h2>
+    <input type="text" id="codigo3" placeholder="Ingrese código del alumno">
+    <button onclick="buscarAlumno3()">Buscar</button>
+    <div id="resultado3"></div>
+  </div>
+
   <script>
 
     /* URL del 1er Trimestre */
@@ -114,7 +122,7 @@
       document.getElementById("resultado1").innerHTML = generarHTML_1er(alumno);
     }
 
-    /* ----------- 2DO TRIMESTRE (CORREGIDO) ----------- */
+    /* ----------- 2DO TRIMESTRE () ----------- */
     async function buscarAlumno2() {
       const codigo = document.getElementById("codigo2").value.trim();
       const res = await fetch(url2);
@@ -134,7 +142,27 @@
       document.getElementById("resultado2").innerHTML = generarHTML_2do(alumno);
     }
 
+    /* ----------- 3ER TRIMESTRE () ----------- */
+    async function buscarAlumno3() {
+      const codigo = document.getElementById("codigo3").value.trim();
+      const res = await fetch(url3);
+      const data = await res.json();  // CORREGIDO: antes decía res2.json()
 
+      console.log("DATA 3ER TRIMESTRE:", data); // Debug útil
+
+      const alumno = data.find(a => 
+        (a.CODIGO || "").trim().toUpperCase() === codigo.toUpperCase()
+      );
+
+      if (!alumno) {
+        document.getElementById("resultado2").innerHTML = "<p>No se encontró el alumno.</p>";
+        return;
+      }
+
+      document.getElementById("resultado2").innerHTML = generarHTML_3er(alumno);
+    }
+
+    
     /* ============ HTML 1ER TRIMESTRE ============ */
     function generarHTML_1er(alumno) {
 
@@ -302,4 +330,5 @@
 
 </body>
 </html>
+
 
