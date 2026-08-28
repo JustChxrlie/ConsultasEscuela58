@@ -3,333 +3,516 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Consulta de Alumnos</title>
+  <title>Consulta de Alumnos - Sec Mixta 58</title>
 
   <style>
+    :root {
+      --primary: #4F46E5;
+      --primary-hover: #4338CA;
+      --bg-color: #F3F4F6;
+      --card-bg: #FFFFFF;
+      --text-main: #1F2937;
+      --text-muted: #6B7280;
+      --border-radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg-color);
+      color: var(--text-main);
       padding: 20px;
-      background: #f4f4f9;
+      line-height: 1.5;
     }
-    h1, h2 {
+
+    /* Encabezado principal */
+    h1 {
       text-align: center;
-      color: #333;
+      color: var(--primary);
+      margin-bottom: 30px;
+      font-size: 1.8rem;
+      font-weight: 800;
     }
-    input, button {
-      padding: 8px;
-      margin: 5px;
-      font-size: 14px;
+
+    /* Contenedor de cada trimestre (Cajas de búsqueda) */
+    .search-box {
+      background: var(--card-bg);
+      padding: 25px;
+      margin: 0 auto 30px auto;
+      border-radius: var(--border-radius);
+      max-width: 700px;
+      box-shadow: var(--shadow);
+      border-top: 5px solid var(--primary);
     }
+
+    .search-box h2 {
+      margin-bottom: 15px;
+      font-size: 1.4rem;
+      color: var(--text-main);
+    }
+
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    input {
+      flex: 1;
+      padding: 12px 15px;
+      font-size: 1rem;
+      border: 1px solid #D1D5DB;
+      border-radius: 8px;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    }
+
     button {
-      background: black;
+      background: var(--primary);
       color: white;
       border: none;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 600;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 8px;
+      transition: background 0.3s, transform 0.1s;
     }
+
     button:hover {
-      background: #444;
+      background: var(--primary-hover);
     }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    /* =========================================
+       DISEÑO DE LOS RESULTADOS
+       ========================================= */
     .result {
       margin-top: 20px;
-      padding: 15px;
-      background: #fff;
-      border-radius: 8px;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      animation: fadeIn 0.4s ease-in-out;
     }
+
+    .student-name {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--primary);
+      border-bottom: 2px solid #E5E7EB;
+      padding-bottom: 10px;
+      margin-bottom: 15px;
+    }
+
+    .observaciones {
+      border-left: 5px solid #F59E0B;
+      background: #FEF3C7;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      color: #92400E;
+    }
+
+    .observaciones h3 {
+      font-size: 1rem;
+      margin-bottom: 5px;
+    }
+
     .grid {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 20px;
     }
+
     .card {
-      border: 1px solid #ddd;
-      border-radius: 8px;
+      border: 1px solid #E5E7EB;
+      border-radius: var(--border-radius);
+      background: #FAFAFA;
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: #F3F4F6;
+      padding: 12px 15px;
+      font-weight: 700;
+      border-bottom: 1px solid #E5E7EB;
+      color: #374151;
+      text-align: center;
+    }
+
+    .card-body {
       padding: 15px;
-      background: #fafafa;
     }
-    .observaciones {
-      border-left: 5px solid #f1c40f;
-      background: #fff8dc;
+
+    .card-body p {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      border-bottom: 1px dashed #E5E7EB;
+      padding-bottom: 4px;
+    }
+    
+    .card-body p:last-child {
+      border-bottom: none;
+    }
+
+    .card-body p span {
+      color: var(--text-muted);
+    }
+
+    .card-body p b {
+      color: var(--text-main);
+      text-align: right;
+    }
+
+    .card-footer {
+      background: #EFF6FF;
+      padding: 12px 15px;
+      font-weight: 700;
+      text-align: center;
+      color: #1E3A8A;
+      border-top: 1px solid #DBEAFE;
+    }
+
+    .status-msg {
+      text-align: center;
+      font-weight: 600;
+      padding: 15px;
+      color: var(--text-muted);
+    }
+
+    .error-msg {
+      color: #DC2626;
+      background: #FEE2E2;
       padding: 10px;
-      margin: 15px 0;
-      border-radius: 6px;
+      border-radius: 8px;
+      text-align: center;
     }
-    .box {
-      background: white;
-      padding: 20px;
-      margin: 20px auto;
-      border-radius: 10px;
-      max-width: 600px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsivo para móviles pequeños */
+    @media (max-width: 480px) {
+      .input-group {
+        flex-direction: column;
+      }
+      button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
 
-  <h1>Consulta de Alumnos Maestra Erika Escuela Secundaria Mixta 58</h1>
+  <h1>Secundaria Mixta 58 - Maestra Erika</h1>
 
-  <!-- ===== BUSCADOR 1ER TRIMESTRE ===== -->
-  <div class="box">
-    <h2>1er Trimestre</h2>
-    <input type="text" id="codigo1" placeholder="Ingrese código del alumno">
-    <button onclick="buscarAlumno1()">Buscar</button>
+  <!-- ===== 1ER TRIMESTRE ===== -->
+  <div class="search-box">
+    <h2> 1️⃣ 1er Trimestre</h2>
+    <div class="input-group">
+      <input type="text" id="codigo1" placeholder="Ej. 1D01TV" onkeypress="verificarEnter(event, 1)">
+      <button onclick="buscarAlumno(1)">Buscar</button>
+    </div>
     <div id="resultado1"></div>
   </div>
 
-  <!-- ===== BUSCADOR 2DO TRIMESTRE ===== -->
-  <div class="box">
-    <h2>2do Trimestre</h2>
-    <input type="text" id="codigo2" placeholder="Ingrese código del alumno">
-    <button onclick="buscarAlumno2()">Buscar</button>
+  <!-- ===== 2DO TRIMESTRE ===== -->
+  <div class="search-box">
+    <h2> 2️⃣ 2do Trimestre</h2>
+    <div class="input-group">
+      <input type="text" id="codigo2" placeholder="Ej. 1D01TV" onkeypress="verificarEnter(event, 2)">
+      <button onclick="buscarAlumno(2)">Buscar</button>
+    </div>
     <div id="resultado2"></div>
   </div>
 
-  <!-- ===== BUSCADOR 3ER TRIMESTRE ===== -->
-  <div class="box">
-    <h2>3er Trimestre</h2>
-    <input type="text" id="codigo3" placeholder="Ingrese código del alumno">
-    <button onclick="buscarAlumno3()">Buscar</button>
+  <!-- ===== 3ER TRIMESTRE ===== -->
+  <div class="search-box">
+    <h2> 3️⃣ 3er Trimestre</h2>
+    <div class="input-group">
+      <input type="text" id="codigo3" placeholder="Ej. 1D01TV" onkeypress="verificarEnter(event, 3)">
+      <button onclick="buscarAlumno(3)">Buscar</button>
+    </div>
     <div id="resultado3"></div>
   </div>
 
   <script>
+    /* =========================================
+       CONFIGURACIÓN Y URLS
+       ========================================= */
+    const trimestresData = {
+      1: { url: "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado", generador: generarHTML_1er },
+      2: { url: "https://opensheet.elk.sh/1LtTVoojUEbXmcDoGkWoXdYP6XFFdjmWagudlwVKA10k/concentrado", generador: generarHTML_2do },
+      3: { url: "https://opensheet.elk.sh/1-noHc0-2uh6WYUTi1bVeMr46WZ7wWHa0UXFkgtJBMGo/concentrado", generador: generarHTML_3er }
+    };
 
-    /* URL del 1er Trimestre */
-    const url1 = "https://opensheet.elk.sh/1DSp8qLaJVty5f3zM7ViVkf_CX7UEoHI8h2dtqzWcqf4/concentrado";
+    /* Función para activar búsqueda con Enter */
+    function verificarEnter(event, trimestre) {
+      if (event.key === "Enter") {
+        buscarAlumno(trimestre);
+      }
+    }
 
-    /* URL del 2do Trimestre (corregida) */
-    const url2 = "https://opensheet.elk.sh/1LtTVoojUEbXmcDoGkWoXdYP6XFFdjmWagudlwVKA10k/concentrado";
+    /* =========================================
+       FUNCIÓN PRINCIPAL DE BÚSQUEDA
+       ========================================= */
+    async function buscarAlumno(trimestre) {
+      const input = document.getElementById(`codigo${trimestre}`);
+      const contenedor = document.getElementById(`resultado${trimestre}`);
+      const codigo = input.value.trim().toUpperCase();
 
-    /* URL del 3er Trimestre (corregida) */
-    const url3 = "https://opensheet.elk.sh/1-noHc0-2uh6WYUTi1bVeMr46WZ7wWHa0UXFkgtJBMGo/concentrado";
+      if (!codigo) {
+        contenedor.innerHTML = `<p class="error-msg">⚠️ Por favor ingresa un código de alumno.</p>`;
+        return;
+      }
 
+      contenedor.innerHTML = `<p class="status-msg">⏳ Buscando información...</p>`;
+
+      try {
+        const config = trimestresData[trimestre];
+        const res = await fetch(config.url);
+        const data = await res.json();
+
+        // Buscar ignorando espacios extras
+        const alumno = data.find(a => (a.CODIGO || "").trim().toUpperCase() === codigo);
+
+        if (!alumno) {
+          contenedor.innerHTML = `<p class="error-msg">❌ No se encontró el alumno. Revisa el código e intenta de nuevo.</p>`;
+          return;
+        }
+
+        // Si existe, genera la tarjeta correspondiente
+        contenedor.innerHTML = config.generador(alumno);
+
+      } catch (error) {
+        console.error("Error al buscar:", error);
+        contenedor.innerHTML = `<p class="error-msg">❌ Ocurrió un error al conectar con la base de datos.</p>`;
+      }
+    }
+
+    /* =========================================
+       PLANTILLAS HTML (GENERADORES)
+       ========================================= */
     
+    function obtenerObservacion(alumno) {
+      return alumno["Observaciones"] || alumno["OBSERVACIONES"] || alumno["Observacion"] || alumno["OBSERVACION"] || "Sin observaciones registradas.";
+    }
+
     /* ----------- 1ER TRIMESTRE ----------- */
-    async function buscarAlumno1() {
-      const codigo = document.getElementById("codigo1").value.trim();
-      const res = await fetch(url1);
-      const data = await res.json();
-
-      const alumno = data.find(a => a.CODIGO.trim().toUpperCase() === codigo.toUpperCase());
-
-      if (!alumno) {
-        document.getElementById("resultado1").innerHTML = "<p>No se encontró el alumno.</p>";
-        return;
-      }
-
-      document.getElementById("resultado1").innerHTML = generarHTML_1er(alumno);
-    }
-
-    /* ----------- 2DO TRIMESTRE () ----------- */
-    async function buscarAlumno2() {
-      const codigo = document.getElementById("codigo2").value.trim();
-      const res = await fetch(url2);
-      const data = await res.json();  // CORREGIDO: antes decía res2.json()
-
-      console.log("DATA 2DO TRIMESTRE:", data); // Debug útil
-
-      const alumno = data.find(a => 
-        (a.CODIGO || "").trim().toUpperCase() === codigo.toUpperCase()
-      );
-
-      if (!alumno) {
-        document.getElementById("resultado2").innerHTML = "<p>No se encontró el alumno.</p>";
-        return;
-      }
-
-      document.getElementById("resultado2").innerHTML = generarHTML_2do(alumno);
-    }
-
-    /* ----------- 3ER TRIMESTRE () ----------- */
-    async function buscarAlumno3() {
-      const codigo = document.getElementById("codigo3").value.trim();
-      const res = await fetch(url3);
-      const data = await res.json();  // CORREGIDO: antes decía res2.json()
-
-      console.log("DATA 3ER TRIMESTRE:", data); // Debug útil
-
-      const alumno = data.find(a => 
-        (a.CODIGO || "").trim().toUpperCase() === codigo.toUpperCase()
-      );
-
-      if (!alumno) {
-        document.getElementById("resultado3").innerHTML = "<p>No se encontró el alumno.</p>";
-        return;
-      }
-
-      document.getElementById("resultado3").innerHTML = generarHTML_3er(alumno);
-    }
-    
-    /* ============ HTML 1ER TRIMESTRE ============ */
     function generarHTML_1er(alumno) {
-
-      const obs = alumno["Observaciones"] 
-               || alumno["OBSERVACIONES"] 
-               || alumno["Observacion"] 
-               || alumno["OBSERVACION"]
-               || "-";
-
       return `
         <div class="result">
-          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-
+          <div class="student-name">🧑‍🎓 ${alumno.Nombre || alumno.NOMBRE || ""} (${alumno.CODIGO})</div>
+          
           <div class="observaciones">
-            <h3>📝 Observaciones del Alumno (1er Trimestre):</h3>
-            <p>${obs}</p>
+            <h3>📝 Observaciones (1er Trimestre)</h3>
+            <p>${obtenerObservacion(alumno)}</p>
           </div>
 
           <div class="grid">
+            <!-- 1ER CONTENIDO -->
             <div class="card">
-              <h3>1er Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 80"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Práctica Mujeres en la tecnologia"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto ADIVINA QUE"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 1 a 10"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+              <div class="card-header">1er Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 1"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 80"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Práctica Mujeres en la tecnologia"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto ADIVINA QUE"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 1 a 10"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C1"] || "-"}</span>
+              </div>
             </div>
 
+            <!-- 2DO CONTENIDO -->
             <div class="card">
-              <h3>2do Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Practica Bloggif"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["PROYECTO"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 11 a 25"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+              <div class="card-header">2do Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 2"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 70"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Practica Bloggif"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["PROYECTO"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 11 a 25"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C2"] || "-"}</span>
+              </div>
             </div>
-          </div>
 
-          <div class="card" style="margin-top: 15px;">
-            <h3>Examen</h3>
-            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
-            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
+            <!-- EXAMEN FINAL -->
+            <div class="card">
+              <div class="card-header" style="background:#FDE68A;">Examen y Total</div>
+              <div class="card-body">
+                <p><span>✅ Aciertos Examen:</span> <b>${alumno["ACIERTOSE"] || "-"}</b></p>
+                <p><span>💯 Valor Examen:</span> <b>${alumno["EXAMEN"] || "-"}</b></p>
+              </div>
+              <div class="card-footer" style="background:#FEF3C7; color:#B45309; border-top-color:#FDE68A; font-size: 1.1rem;">
+                Total Trimestre: <span>${alumno["TOTAL TRIMESTRE"] || "-"}</span>
+              </div>
+            </div>
           </div>
         </div>
       `;
     }
 
-
-    /* ============ HTML 2DO TRIMESTRE ============ */
-
+    /* ----------- 2DO TRIMESTRE ----------- */
     function generarHTML_2do(alumno) {
-
-      const obs2 = alumno["Observaciones"] || "-";
-
       return `
         <div class="result">
-          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-
+          <div class="student-name">🧑‍🎓 ${alumno.Nombre || alumno.NOMBRE || ""} (${alumno.CODIGO})</div>
+          
           <div class="observaciones">
-            <h3>📝 Observaciones del Alumno (2do Trimestre):</h3>
-            <p>${obs2}</p>
+            <h3>📝 Observaciones (2do Trimestre)</h3>
+            <p>${obtenerObservacion(alumno)}</p>
           </div>
 
           <div class="grid">
-
             <div class="card">
-              <h3>1er Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Pract 4. Energia"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto Mapa"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 1 a la 5"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+              <div class="card-header">1er Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 1"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 70"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Pract 4. Energia"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto Mapa"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 1 a la 5"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C1"] || "-"}</span>
+              </div>
             </div>
 
             <div class="card">
-              <h3>2do Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 70 C2"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto  Avance Empresa"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 6 a la 15"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+              <div class="card-header">2do Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 2"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 70 C2"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto  Avance Empresa"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 6 a la 15"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C2"] || "-"}</span>
+              </div>
             </div>
 
             <div class="card">
-              <h3>3er Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 60"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Práct 6. Pres CANVA empr"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto EMPRE"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 16 a la 25"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C3"] || "-"}</p>              
+              <div class="card-header">3er Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 3"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 60"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Práct 6. Pres CANVA empr"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto EMPRE"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 16 a la 25"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C3"] || "-"}</span>
+              </div>
             </div>
 
-          </div>
-
-          <div class="card" style="margin-top: 15px;">
-            <h3>Examen</h3>
-            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
-            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
+            <div class="card">
+              <div class="card-header" style="background:#FDE68A;">Examen y Total</div>
+              <div class="card-body">
+                <p><span>✅ Aciertos Examen:</span> <b>${alumno["ACIERTOSE"] || "-"}</b></p>
+                <p><span>💯 Valor Examen:</span> <b>${alumno["EXAMEN"] || "-"}</b></p>
+              </div>
+              <div class="card-footer" style="background:#FEF3C7; color:#B45309; border-top-color:#FDE68A; font-size: 1.1rem;">
+                Total Trimestre: <span>${alumno["TOTAL TRIMESTRE"] || "-"}</span>
+              </div>
+            </div>
           </div>
         </div>
       `;
     }
 
-    /* ============ HTML 3ER TRIMESTRE ============ */
-
+    /* ----------- 3ER TRIMESTRE ----------- */
+    // Nota: Mantuve las llaves que tenías en tu código original para el 3er trimestre,
+    // pero agregué el nuevo orden y "Trabajos entregados". Ajusta los nombres de las 
+    // columnas si son diferentes en tu Excel final.
     function generarHTML_3er(alumno) {
-
-      const obs3 = alumno["Observaciones"] || "-";
-
       return `
         <div class="result">
-          <h2>${alumno.Nombre || alumno.NOMBRE} (${alumno.CODIGO})</h2>
-
+          <div class="student-name">🧑‍🎓 ${alumno.Nombre || alumno.NOMBRE || ""} (${alumno.CODIGO})</div>
+          
           <div class="observaciones">
-            <h3>📝 Observaciones del Alumno (3er Trimestre):</h3>
-            <p>${obs3}</p>
+            <h3>📝 Observaciones (3er Trimestre)</h3>
+            <p>${obtenerObservacion(alumno)}</p>
           </div>
 
           <div class="grid">
-
             <div class="card">
-              <h3>1er Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 70"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Pract 4. Energia"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto Mapa"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 1 a la 5"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C1"] || "-"}</p>
+              <div class="card-header">1er Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 1"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 70"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Pract 4. Energia"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto Mapa"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 1 a la 5"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C1"] || "-"}</span>
+              </div>
             </div>
 
             <div class="card">
-              <h3>2do Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 70 C2"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto  Avance Empresa"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 6 a la 15"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C2"] || "-"}</p>
+              <div class="card-header">2do Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 2"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 70 C2"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Pract 5.Sist  Tecn CANVA"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto  Avance Empresa"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 6 a la 15"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C2"] || "-"}</span>
+              </div>
             </div>
 
             <div class="card">
-              <h3>3er Contenido</h3>
-              <p><b>Puntaje de Trabajos:</b> ${alumno["TAREAS de 60"] || "-"}</p>
-              <p><b>Prácticas:</b> ${alumno["Práct 6. Pres CANVA empr"] || "-"}</p>
-              <p><b>Proyecto:</b> ${alumno["Proyecto EMPRE"] || "-"}</p>
-              <p><b>Fichas:</b> ${alumno["FICHAS 16 a la 25"] || "-"}</p>
-              <p><b>Calificación:</b> ${alumno["TOTAL DE CALIFICACION C3"] || "-"}</p>              
+              <div class="card-header">3er Contenido</div>
+              <div class="card-body">
+                <p><span>📋 Trabs. entregados:</span> <b>${alumno["Trabajos entregados 3"] || "-"}</b></p>
+                <p><span>🎯 Puntaje Trabajos:</span> <b>${alumno["TAREAS de 60"] || "-"}</b></p>
+                <p><span>🛠️ Prácticas:</span> <b>${alumno["Práct 6. Pres CANVA empr"] || "-"}</b></p>
+                <p><span>🚀 Proyectos:</span> <b>${alumno["Proyecto EMPRE"] || "-"}</b></p>
+                <p><span>📝 Fichas:</span> <b>${alumno["FICHAS 16 a la 25"] || "-"}</b></p>
+              </div>
+              <div class="card-footer">
+                Calificación: <span>${alumno["TOTAL DE CALIFICACION C3"] || "-"}</span>
+              </div>
             </div>
 
-          </div>
-
-          <div class="card" style="margin-top: 15px;">
-            <h3>Examen</h3>
-            <p><b>Aciertos:</b> ${alumno["ACIERTOSE"] || "-"}</p>
-            <p><b>Valor:</b> ${alumno["EXAMEN"] || "-"}</p>
-            <p><b>Total Trimestre:</b> ${alumno["TOTAL TRIMESTRE"] || "-"}</p>
+            <div class="card">
+              <div class="card-header" style="background:#FDE68A;">Examen y Total</div>
+              <div class="card-body">
+                <p><span>✅ Aciertos Examen:</span> <b>${alumno["ACIERTOSE"] || "-"}</b></p>
+                <p><span>💯 Valor Examen:</span> <b>${alumno["EXAMEN"] || "-"}</b></p>
+              </div>
+              <div class="card-footer" style="background:#FEF3C7; color:#B45309; border-top-color:#FDE68A; font-size: 1.1rem;">
+                Total Trimestre: <span>${alumno["TOTAL TRIMESTRE"] || "-"}</span>
+              </div>
+            </div>
           </div>
         </div>
       `;
     }
-
-
-    
   </script>
 
 </body>
 </html>
-
-
-
-
